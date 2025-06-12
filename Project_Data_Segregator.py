@@ -7,11 +7,11 @@ file_path = "project_data.xlsx"
 
 #Generating list of unique cities 
 project_data = pd.read_excel(file_path)
-unique_cities = project_data['City'].unique()
+unique_projects = project_data['Project'].unique()
 
 #Creating new sheets for each city and new data frames for each city's project details and adding it to the newly created sheet
 with pd.ExcelWriter(file_path, engine='openpyxl', mode='a') as writer:
-    for i in unique_cities:
+    for i in unique_projects:
         sheet_name = i+"_Projects"[:31]
-        citydf = project_data[project_data['City']==i]
-        citydf.to_excel(writer, sheet_name=sheet_name, index=False)
+        projectdf = project_data[project_data['Project']==i]
+        projectdf.to_excel(writer, sheet_name=sheet_name, index=False)
