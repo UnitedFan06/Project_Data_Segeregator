@@ -8,7 +8,9 @@ main_sheet_name = 0
 
 try:
     project_data = pd.read_excel(file_path, sheet_name=main_sheet_name)
-    print(f"Successfully loaded main sheet '{project_data.name}' from '{file_path}'.")
+    # FIX: A DataFrame does not have a 'name' attribute. Use main_sheet_name instead.
+    # If main_sheet_name is an integer (like 0), its string representation is fine here.
+    print(f"Successfully loaded main sheet '{main_sheet_name}' from '{file_path}'.")
 except FileNotFoundError:
     print(f"Error: The file '{file_path}' was not found. Please ensure it exists.")
     exit()
@@ -18,7 +20,24 @@ except Exception as e:
 
 unique_projects = project_data['Project'].unique()
 
-all_sheets_data = {project_data.name: project_data}
+# Initialize all_sheets_data dictionary.
+# If main_sheet_name was an integer, we need to get its actual name from the loaded DataFrame
+# to use as the key for the dictionary if we want consistency with string sheet names.
+# However, for simply storing the main DataFrame, just using the integer key is fine too
+# or explicitly getting the sheet name if it's guaranteed to be a string name.
+# For simplicity and to match the previous version's implicit main sheet handling,
+# we'll use a placeholder key or simply add the main sheet to the dictionary by its resolved name
+# after checking if it's a string name or an integer index.
+
+# Get the actual name of the main sheet after loading
+if isinstance(main_sheet_name, int):
+    # When reading by index, pandas sets the sheet_name attribute on the returned DataFrame
+    actual_main_sheet_name = project_data.attrs.get('sheet_name', str(main_sheet_name))
+else:
+    actual_main_sheet_name = main_sheet_name
+
+all_sheets_data = {actual_main_sheet_name: project_data}
+
 
 existing_workbook_sheets = []
 if os.path.exists(file_path):
